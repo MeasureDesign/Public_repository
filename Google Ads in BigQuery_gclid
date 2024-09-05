@@ -1,0 +1,123 @@
+/* ================================================================================== 
+Query Title: Google Ads in BigQuery_gclid
+Description: This query joins multiple Google Ads tables retrieved from Data Transfer default schema to get basic overview for campaigns.
+==================================================================================
+Anna Horáková | MeasureDesign www.measuredesign.cz anna.horakova@measuredesign.cz
+
+Created On: 2024-08-01 Last Updated: 2024-08-01
+
+Usage: This query is designed for pairing Google Ads data to other web (GA) data, CRM data...
+
+For questions or contributions, please send us an e-mail: info@measuredesign.cz 
+Or submit an issue on our GitHub repository.
+
+================================================================================== */
+
+-- Your SQL query starts here
+
+ with  set_date as(
+  SELECT 
+    DATE "2024-08-16" AS start_date, /* CHANGE THE START DATE */
+    DATE "2024-08-25" AS end_date /* CHANGE THE END DATE */
+ ),
+ ids_metrics as (
+select
+    customer_id,
+    campaign_id,
+    sum ( metrics_cost_micros/1000000) as cost,
+    sum( metrics_impressions) as impressions,
+    sum (metrics_clicks) as clicks,
+    sum(metrics_conversions) as conversions,
+    segments_date
+  from `PROJECT_NAME.DATASET_NAME.p_ads_CampaignBasicStats_12345`
+  where
+    DATE (segments_date) between 
+    (SELECT start_date from set_date) and
+    (SELECT end_date from set_date) 
+  group by all
+ ),
+ customer_data as (
+  select
+      customer_id,
+      customer_currency_code as currency
+
+  from `PROJECT_NAME.DATASET_NAME.p_ads_Customer_12345`
+ ),
+
+campaign_data as (
+  select 
+    customer_id,
+    campaign_id,
+    campaign_name,
+  from `PROJECT_NAME.DATASET_NAME.p_ads_Campaign_12345` 
+ 
+),
+gclid_data as (
+  select 
+      campaign_id as campaign_id,
+      click_view_gclid as gclid
+    from `PROJECT_NAME.DATASET_NAME.p_ads_ClickStats_12345` 
+    WHERE DATE (segments_date) between 
+    (SELECT start_date from set_date) and
+    (SELECT end_date from set_date) 
+
+
+),
+join_customer as (
+  select *,
+  customer_data.currency as currency_customer
+  from campaign_data
+  left join customer_data on campaign_data.customer_id = customer_data.customer_id
+),
+
+
+  join_data as (
+
+  select
+    ids_metrics.segments_date,
+
+  /* IDs */
+    ids_metrics.customer_id,
+    ids_metrics.campaign_id,
+
+    /* NAMES & BIDDING*/
+    gclid_data.gclid,
+    campaign_name,
+
+    /* COST METRICS */
+    ids_metrics.clicks,
+    ids_metrics.impressions,
+    ids_metrics.conversions,
+    ids_metrics.cost,
+    join_customer.currency_customer as currency
+
+  from ids_metrics
+  LEFT JOIN join_customer ON ids_metrics.campaign_id = join_customer.campaign_id
+  LEFT JOIN gclid_data ON ids_metrics.campaign_id = gclid_data.campaign_id
+
+  group by all
+  )
+
+select
+  segments_date,
+  customer_id,
+  campaign_id,
+  campaign_name,
+  gclid,
+
+  round(sum(cost),2) as cost_campaign,
+  sum (clicks) as clicks_campaign,
+  if (sum(clicks) = 0, 0, round(sum(cost)/sum(clicks),2)) as cpc_campaign,
+  sum (impressions) as impressions_campaign,
+  if (sum(impressions) = 0, 0, round(((sum(cost)/sum(impressions))*1000),2)) as cpm_campaign,
+  sum(conversions) as conversions_campaign,
+  if (sum(conversions) = 0, 0, round((sum(cost)/sum(conversions)),2)) as cpa_campaign,
+  currency
+
+from
+join_data
+
+
+group by all
+
+order by campaign_name
