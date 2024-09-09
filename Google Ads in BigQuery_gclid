@@ -6,7 +6,9 @@ Anna Horáková | MeasureDesign www.measuredesign.cz anna.horakova@measuredesign
 
 Created On: 2024-08-01 Last Updated: 2024-08-01
 
-Usage: This query is designed for pairing Google Ads data to other web (GA) data, CRM data...
+Usage: This query is designed for pairing Google Ads data to other web (GA) data, CRM data... 
+--> Replace 'PROJECT_NAME' with name of your project and 'DATASET_NAME' with name of your GAds export dataset in FROM clause. Also replace 12345 at the end of the path to your GAds dataset with the ID of your account or MCC.
+Don't forget tick the checkbox in the Data Transfer in BQ to include your PMax campaigns!
 
 For questions or contributions, please send us an e-mail: info@measuredesign.cz 
 Or submit an issue on our GitHub repository.
