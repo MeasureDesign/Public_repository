@@ -4,11 +4,13 @@ Description: This query joins multiple Google Ads tables retrieved from Data Tra
 ==================================================================================
 Anna Horáková | MeasureDesign www.measuredesign.cz anna.horakova@measuredesign.cz
 
-Created On: 2024-08-01 Last Updated: 2024-08-01
+Created On: 2024-08-01 Last Updated: 2024-09-10
 
 Usage: This query is designed for pairing Google Ads data to other web (GA) data, CRM data... 
 --> Replace 'PROJECT_NAME' with name of your project and 'DATASET_NAME' with name of your GAds export dataset in FROM clause. Also replace 12345 at the end of the path to your GAds dataset with the ID of your account or MCC.
 Don't forget tick the checkbox in the Data Transfer in BQ to include your PMax campaigns!
+
+--> Dynamic date range (D-2) is used by default. You can hide it by commenting and unhide part in Manual load section to select custom date range.
 
 For questions or contributions, please send us an e-mail: info@measuredesign.cz 
 Or submit an issue on our GitHub repository.
@@ -19,8 +21,14 @@ Or submit an issue on our GitHub repository.
 
  with  set_date as(
   SELECT 
-    DATE "2024-08-16" AS start_date, /* CHANGE THE START DATE */
-    DATE "2024-08-25" AS end_date /* CHANGE THE END DATE */
+
+ /* DYNAMIC LOAD D-2 */
+  current_date()-2 AS start_date,  /* CHANGE THE START DATE */
+  current_date()-2 AS end_date /* CHANGE THE END DATE */
+
+  /* MANUAL LOAD */
+ --   DATE "2024-08-01" AS start_date,  /* CHANGE THE START DATE */
+ --   DATE "2024-09-09" AS end_date  /* CHANGE THE END DATE */
  ),
  ids_metrics as (
 select
