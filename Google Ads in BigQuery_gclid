@@ -40,7 +40,7 @@ select
  ),
  customer_data as (
   select
-      customer_id,
+      distinct customer_id,
       customer_currency_code as currency
 
   from `PROJECT_NAME.DATASET_NAME.p_ads_Customer_12345`
@@ -48,8 +48,8 @@ select
 
 campaign_data as (
   select 
+    distinct campaign_id,
     customer_id,
-    campaign_id,
     campaign_name,
   from `PROJECT_NAME.DATASET_NAME.p_ads_Campaign_12345` 
  
