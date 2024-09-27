@@ -41,7 +41,7 @@ select
     segments_date
   from `PROJECT_NAME.DATASET_NAME.p_ads_CampaignBasicStats_12345`
   where
-    DATE (segments_date) between 
+    DATE (_PARTITIONTIME) between 
     (SELECT start_date from set_date) and
     (SELECT end_date from set_date) 
   group by all
@@ -67,7 +67,7 @@ gclid_data as (
       campaign_id as campaign_id,
       click_view_gclid as gclid
     from `PROJECT_NAME.DATASET_NAME.p_ads_ClickStats_12345` 
-    WHERE DATE (segments_date) between 
+    WHERE DATE (_PARTITIONTIME) between 
     (SELECT start_date from set_date) and
     (SELECT end_date from set_date) 
 
