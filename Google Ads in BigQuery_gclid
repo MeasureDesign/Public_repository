@@ -4,7 +4,7 @@ Description: This query joins multiple Google Ads tables retrieved from Data Tra
 ==================================================================================
 Anna Horáková | MeasureDesign www.measuredesign.cz anna.horakova@measuredesign.cz
 
-Created On: 2024-08-01 Last Updated: 2024-09-10
+Created On: 2024-08-01 Last Updated: 2024-09-27
 
 Usage: This query is designed for pairing Google Ads data to other web (GA) data, CRM data... 
 --> Replace 'PROJECT_NAME' with name of your project and 'DATASET_NAME' with name of your GAds export dataset in FROM clause. Also replace 12345 at the end of the path to your GAds dataset with the ID of your account or MCC.
